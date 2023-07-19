@@ -133,7 +133,7 @@ During the **_Notify-Media-setting-Process_** two things occur:
 
 ## Port SI configuration (flows)
 
-![Port SI Flows](<Port SI Flows.drawio.svg>) 
+![Port SI Flows](<Port_SI_Flows.drawio.svg>) 
 
 As described above, passing the port SI parameters is carried out in 3 scenarios:
 
