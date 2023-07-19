@@ -102,14 +102,7 @@ Here is the table to map the fields and SAI attributes:
 
 ## The input
 
-SI parameters input comes as an excel file, received from PHY, and structured as follows:
-
-![Alt text](<input excel snippet-1.png>)
-
-
-Each pair of platform (NDR, HDR, XDR) and device (4700, 5600) has its own dedicated excel file.</br>
-This file contains both SerDes SI parameters and module SI parameters.</br>
-To ensure that this data is transmitted properly to SDK, the Excel file will be parsed and transformed into the media_settings.json file.</br>
+To ensure that this SI values are transmitted properly to SDK, we are going to use a JSON file, called media_settings.json.</br>
 The media_settings.json file will be located at '/usr/share/sonic/device/[device_type]/media_settings.json' and will follow this format:
 
 ![Alt text](<json template-1.png>)
@@ -127,12 +120,12 @@ During the **_Notify-Media-setting-Process_** two things occur:
 1. STATE_DB is updated with sfp, dom and pm data.
 2. The APP_DB is updated with the connected module SI parameters. This is achieved through the notify_media_settings() function, which uses the pre-parsed media_settings.json file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup, based on the media type, specification compliance, length, and lane speed. Then, the lookup is performed using that key, and the relevant data is extracted from the JSON and stored in APP_DB.
 
-    Before transitioning to independent mode, SERDES SI parameters were never applied because the media_settings.json file was not found on the platform. In the new mode, media_settings.json will be present on every platform, but it will only be utilized when it contains an entry for a plugged-in CMIS module (QSFP-DD, OSFP). If it does not have a suitable entry for the connected module, nothing will be written to APP_DB to maintain backward compatibility with the legacy flow.
+    
+    - A file named sai.profile will store a new parameter, **SAI_INDEPENDENT_MODULE_MODE=False**,  indicating whether independent mode is enabled for the platform or not. In order for this functionality to be active, it is not sufficient to simply have a CMIS module plugged in; it is also necessary for the independent module feature to be supported in sai.profile.
 
-    In order for the FW to configure the ASIC in the case of non-CMIS modules, instead of SONiC, it is crucial to ensure that the           media_settings.json file satisfies the following two requirements:
-    - The media_settings.json file should only contain data related to CMIS modules. Signal Integrity (SI) parameters for non-CMIS modules should not be present in this JSON file.
+    - Before transitioning to independent mode, SERDES SI parameters were never applied because the media_settings.json file was not found on the platform. In the new mode, media_settings.json will be present on every platform that supports the independent mode, but it will only be utilized when it contains an entry for a plugged-in CMIS module (QSFP-DD, OSFP). If it does not have a suitable entry for the connected module, nothing will be written to APP_DB to maintain backward compatibility with the legacy flow. 
+    If a platform does not support independent module management, it is better to not have the media_settings.json file on the platform at all, just as it is today.
 
-    - The media_settings.json file must not include a 'default' section. Normally, the lookup process in the media_settings.json file allows for a default section. SI parameters, defined in this section, will be written to the APP_DB if there is no matching entry found for any other module in the JSON file. However, since we do not intend SONiC configuration to support non-CMIS modules, it is necessary for the media_settings.json file to exclude the default section.
 
     </br>Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector that contains the SI values for a certain port and passes it as a whole to the SAI. Eventually, they will write it to the SLTP register in PHY upon receiving ADMIN_UP.  
   </br></br></br>
@@ -140,14 +133,19 @@ During the **_Notify-Media-setting-Process_** two things occur:
 
 ## Port SI configuration (flows)
 
-![Port SI Flows](<Port SI Flows.drawio.svg>)  
-*** Risk: Currently the loading of media_settings.json is skipped in case fast-reboot is enabled. There's an open issue that is under discussion with Microsoft to revert this commit: https://github.com/sonic-net/sonic-platform-daemons/pull/221. 
+![Port SI Flows](<Port SI Flows.drawio.svg>) 
 
 As described above, passing the port SI parameters is carried out in 3 scenarios:
 
 - Initialization phase: When the switch is going up, the **_Notify-Media-setting-Process_** is carried out for each of the current interfaces. 
 - Module Plug in event
 - Port speed change event: When there is a speed change (port-breakout for example), it is going to affect the speed per lane </br></br></br></br>
+
+
+## Fastboot / Warmboot
+
+*** Risk: Currently the loading of media_settings.json is skipped in case fast-reboot is enabled. There's an open issue that is under discussion with Microsoft to revert this commit: https://github.com/sonic-net/sonic-platform-daemons/pull/221. 
+
 
 
 # Changes to support the new mode
@@ -158,7 +156,7 @@ As described above, passing the port SI parameters is carried out in 3 scenarios
 
       We need to extend the key used for lookup in the media_settings.json file to include the lane speed as well. Currently, the key is composed of three components: media type, specification compliance, and length.
       In the new format of media_settings.json, the key will consist of four components: media type, specification compliance, length, **<span style="color:red">and lane speed</span>**".
-      For example, "QSFP28-40GBASE-CR4-5M" will be transformed to "QSFP28-40GBASE-CR4-5M**<span style="color:red">-50G</span>"**.
+      For example, "QSFP28-40GBASE-CR4-5M" will be transformed to "QSFP28-40GBASE-CR4-5M<span style="color:red">-50G</span>".
       To achieve this, the SFP thread will maintain a dictionary that maps the current speed and number of lanes for each port. The SFP thread will listen for changes in STATE_DB.PORT_TABLE to have updated data.
       When it's time to access the media_settings.json file, the function "notify_media_settings()" will calculate the lane speed for a specific port using the formula: lane_speed = port_speed / number_of_lanes. It will then concatenate this value to the key in the original format.
 
