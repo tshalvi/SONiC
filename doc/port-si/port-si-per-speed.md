@@ -250,7 +250,7 @@ As described above, passing the port SI parameters is carried out in 3 scenarios
         else:
           lane_speed_key = None
         return lane_speed_key
-      ```
+```
     </br>
 
 
