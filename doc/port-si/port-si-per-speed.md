@@ -251,7 +251,6 @@ As described above, passing the port SI parameters is carried out in 3 scenarios
           lane_speed_key = None
         return lane_speed_key
 ```
-    </br>
 
 
    - The method get_media_settings_value() needs to be modified to enable lookup in both the extended format JSON and the current one:
