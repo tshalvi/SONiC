@@ -28,7 +28,7 @@ Port Signal Integrity by Speed </br></br>
 ## Revision
 | Rev |     Date    |       Author       | Change Description                                       |
 |:---:|:-----------:|:------------------:|-----------------------------------                       |
-| 0.1 | 07/06/2023  | Tomer Shalvi       | Base version                                             |
+| 0.1 | 08/28/2023  | Tomer Shalvi       | Base version                                             |
 
 ## About this Manual
 This document is the high level design of Independent Module feature for SONiC Nvidia.
@@ -57,8 +57,8 @@ This document is the high level design of Independent Module feature for SONiC N
 
 Customers want to have complete flexibility and independence between switch vendors and optical cables.
 However, today, if our customers want to have our switches support some module of other vendors, they have to bear long waiting times for a FW release to come out. 
-So the goal of this feature is to allow them to take our switches and easily use them interchangeably with other vendors modules, and vice versa.
-Hence, a strategic decision has been made to transition the management of CMIS modules from FW to software SW.
+So the goal of this feature is to allow them to take our switches and easily use them interchangeably with other vendors' modules, and vice versa.
+Hence, a strategic decision has been made to transition the management of CMIS modules from FW to SW.
 
 
 </br></br></br></br>
@@ -77,7 +77,7 @@ Additionally, as part of working on this entire feature (outside the context of 
 
 ## Application DB Enhancements
 
-6 new fields **ob_m2lp**, **ob_alev_out**, **obplev**, **obnlev**, **regn_bfm1p**, **regn_bfm1n** will be added to **PORT_TABLE** table:
+6 new fields **ob_m2lp**, **ob_alev_out**, **obplev**, **obnlev**, **regn_bfm1p**, **regn_bfm1n** will be added to **PORT_TABLE**:
 
 ```
 ob_m2lp             = 1*8HEXDIG *( "," 1*8HEXDIG) ; list of hex values, one per lane              ; ratio between the central eye to the upper and lower eyes (for PAM4 only)
@@ -105,7 +105,16 @@ Here is the table to map the fields and SAI attributes:
 To ensure that this SI values are transmitted properly to SDK, we are going to use a JSON file, called media_settings.json.</br>
 The media_settings.json file will be located at '/usr/share/sonic/device/[device_type]/media_settings.json' and will follow this format:
 
-![Alt text](<json template-1.png>)
+![Alt text](<media_settings_template.png>)
+
+
+Within the "PORT_MEDIA_SETTINGS" section, the SI values for each individual port are organized into four levels of hierarchy:
+
+* The first level relates to the vendor_key/media_key level (which will be elaborated upon shortly).
+* The second hierarchy level is the lane_speed_key level, which specifies the port speed and lane count.
+* On the third level, we encounter the names of the SI fields.
+* Finally, at the last hierarchy level, the corresponding values for these fields are presented.
+
 
 
 ## How are we going to use this json?
@@ -118,7 +127,7 @@ The flow of using of this json will be referred to as the **_Notify-Media-settin
 During the **_Notify-Media-setting-Process_** two things occur:
 
 1. STATE_DB is updated with sfp, dom and pm data.
-2. The APP_DB is updated with the connected module SI parameters. This is achieved through the notify_media_settings() function, which uses the pre-parsed media_settings.json file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup, based on the media type, specification compliance, length, and lane speed. Then, the lookup is performed using that key, and the relevant data is extracted from the JSON and stored in APP_DB.
+2. The APP_DB is updated with the connected module SI parameters. This is achieved through the notify_media_settings() function, which uses the pre-parsed media_settings.json file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup. Then, the lookup is performed, and the relevant data is extracted from the JSON and stored in APP_DB.
 
     
     - A file named sai.profile will store a new parameter, **SAI_INDEPENDENT_MODULE_MODE=False**,  indicating whether independent mode is enabled for the platform or not. In order for this functionality to be active, it is not sufficient to simply have a CMIS module plugged in; it is also necessary for the independent module feature to be supported in sai.profile.
@@ -127,7 +136,7 @@ During the **_Notify-Media-setting-Process_** two things occur:
     If a platform does not support independent module management, it is better to not have the media_settings.json file on the platform at all, just as it is today.
 
 
-    </br>Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector that contains the SI values for a certain port and passes it as a whole to the SAI. Eventually, they will write it to the SLTP register in PHY upon receiving ADMIN_UP.  
+    </br>Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector (a PortConfig object) that contains the SI values for a certain port and passes it as a whole to the SAI. Eventually, they will write it to the SLTP register in PHY upon receiving ADMIN_UP.  
   </br></br></br>
 
 
@@ -138,7 +147,7 @@ During the **_Notify-Media-setting-Process_** two things occur:
 As described above, passing the port SI parameters is carried out in 3 scenarios:
 
 - Initialization phase: When the switch is going up, the **_Notify-Media-setting-Process_** is carried out for each of the current interfaces. 
-- Module Plug in event
+- Module Plug-in event
 - Port speed change event: When there is a speed change (port-breakout for example), it is going to affect the speed per lane </br></br></br></br>
 
 
@@ -150,51 +159,11 @@ As described above, passing the port SI parameters is carried out in 3 scenarios
 
 # Changes to support the new mode
 
-1. The XCVRD::Notifty_media_settings() function should be modified to support the new SI parameters and the format of media_settings_json:
-
-   - The method get_media_settings_key() should be extended:
-
-      We need to extend the key used for lookup in the media_settings.json file to include the lane speed as well. Currently, the key is composed of three components: media type, specification compliance, and length.
-      In the new format of media_settings.json, the key will consist of four components: media type, specification compliance, length, **<span style="color:red">and lane speed</span>**".
-      For example, "QSFP28-40GBASE-CR4-5M" will be transformed to "QSFP28-40GBASE-CR4-5M<span style="color:red">-50G</span>".
-      To achieve this, the SFP thread will maintain a dictionary that maps the current speed and number of lanes for each port. The SFP thread will listen for changes in STATE_DB.PORT_TABLE to have updated data.
-      When it's time to access the media_settings.json file, the function "notify_media_settings()" will calculate the lane speed for a specific port using the formula: lane_speed = port_speed / number_of_lanes. It will then concatenate this value to the key in the original format.
 
 
-      ```python
-      def get_media_settings_key(port, transceiver_dict):
-        ...
-        lane_speed = self.port_dict[port]['speed'] / self.port_dict[port]['lanes']
-        media_key += '-' + lane_speed
-        ...
-        return media_key
-      ```
 
-    - The method get_media_settings_value() should be modified to enable lookup in the json file for both the extended format keys and the current format keys:
 
-      After calculating the key, the lookup in the media_settings.json file will be performed.
-      Initially, the entire key will be used for the lookup. If there is a match, the corresponding values will be fetched and returned.
-      However, if there is no match, the SI parameters will be looked up by removing the lane speed component from the key, reverting back to the original format mentioned earlier.
-      This approach ensures compatibility with other vendors whose lookup does not depend on the lane speed. By doing so, we ensure that changing the format of the entries within the media_settings.json file does not break code from other vendors.
-
-      
-      ```python
-      def get_media_settings_value(physical_port, media_key):
-        if PORT_MEDIA_SETTINGS_KEY in g_dict:
-            for keys in g_dict[PORT_MEDIA_SETTINGS_KEY]:
-              if int(keys) == physical_port:
-                  media_dict = g_dict[PORT_MEDIA_SETTINGS_KEY][keys]
-                  break
-      
-        if media_key in media_dict:
-            return media_dict[media_key]
-        old_format_key = media_key.split('-')[:-1]
-        if old_format_key in media_dict:
-            return media_dict[old_format_key]
-        return {}
-      ```
-
-2. Changes in SfpStateUpdateTask thread:
+1. Changes in SfpStateUpdateTask thread:
   - In independent mode, as mentioned before, we rely on the lane speed when we lookup in media_settings,json. Hence, this flow has to be triggered not only by insertion/removal of modules, but by configuration changes as well (port breakout for example).
       This thread is going to listen to STATE_DB.PORT_TABLE, and when there is a change in port speed, notify_media_settings() will be triggered.
   - We need the thread to have a new member variable to store the speed and number of lanes for each port: port_dict.
@@ -226,36 +195,290 @@ As described above, passing the port SI parameters is carried out in 3 scenarios
   ```
 
 
-3. Ports OA shall support new SI params: Need to parse data from PORT Table in APP DB and send new attributes via Port SAI API
-   doTask(consumer&) is a function that executes only when a certain event occurs. In our case, PortOrch::doTask(consumer&) listens for changes in APP_DB and triggered only after APP_DB is updated (during the execution of notify_media_settings()). After that, SI params need to be transmitted from APP_DB to SAI. This will be done as follows:
+
+
+
+
+
+
+
+2. The XCVRD::Notifty_media_settings() function should be modified to support the new SI parameters and the format of media_settings_json:
+
+   - The method get_media_settings_key() should be extended:
+
+      We need to extend the key used for lookup in the 'media_settings.json' file to consider lane speed. Currently, there are two types of keys: 'vendor_key' (vendor name + vendor part number, for example: 'AMPHENOL-1234') and 'media_key' (media type + media_compliance_code + media length, for example: 'QSFP28-40GBASE-CR4-1M'). </br>
+      In the new format of 'media_settings.json', the 'get_media_settings_key()' method will return three values instead of the two values described above. The additional value returned from this method will be the 'lane_speed_key', for example: '400GAUI-8' (where '400' refers to the port speed and '8' refers to the lane count). </br></br>
+
+      How will the 'lane_speed_key' be calculated? </br>
+      Each module contains a list of supported Application Advertisements in its EEPROM. For example:
+      
+      ```
+      Application Advertisement: 
+        400GAUI-8 C2M (Annex 120E) - Host Assign (0x1) - Active Cable assembly with BER < 2.6x10^-4 - Media Assign (0x1)
+        IB EDR (Arch.Spec.Vol.2) - Host Assign (0x11) - Active Cable assembly with BER < 10^-12 - Media Assign (0x11)
+        200GAUI-4 C2M (Annex 120E) - Host Assign (0x11) - Active Cable assembly with BER < 2.6x10^-4 - Media Assign (0x11)
+        CAUI-4 C2M (Annex 83E) without FEC - Host Assign (0x11) - Active Cable assembly with BER < 10^-12 - Media Assign (0x11)
+      ```
+
+      
+      We will use this list to derive the 'lane_speed' key. We will iterate over this list and return the item whose port speed and lane count match the values for the corresponding port. These values are stored in 'port_dict', which is a mapping between ports and their speeds and lane counts as described earlier. The existing method 'get_cmis_application_desired()' performs exactly this task, so we will use it to calculate the new key.
+
+
+
+```python
+      def get_media_settings_key(physical_port, transceiver_dict, port_speed, lane_count):
+        ...
+        vendor_key = vendor_name_str.upper() + '-' + vendor_pn_str
+        media_key = media_type + '-' +  media_compliance_code + '-' + str(media_len)
+        lane_speed_key = get_lane_speed_key()
+        return [vendor_key, media_key, lane_speed_key]
+
+
+      def get_ lane_speed_key (physical_port, port_speed, lane_count):
+        sfp = platform_chassis.get_sfp(physical_port)
+        api = sfp.get_xcvr_api()
+        speed_index = get_cmis_application_desired(api, int(lane_count), int(port_speed))
+
+        appl_dict = None
+        if type(api) == CmisApi:
+          appl_dict = api.get_application_advertisement()
+
+          if speed_index is None:
+            lane_speed_key= None
+          else:
+            lane_speed_key = "speed:" + (appl_dict[speed_index].get('host_electrical_interface_id')).split()[0]
+        else:
+          lane_speed_key = None
+        return lane_speed_key
+      ```
+    </br>
+
+
+   - The method get_media_settings_value() needs to be modified to enable lookup in both the extended format JSON and the current one:
+
+      Once the key has been calculated, the lookup in the 'media_settings.json' file will be performed. Currently, the Vendor key (e.g. AMPHENOL-1234) is looked up first, and if there is an exact match, then those values are fetched and returned. If the vendor key doesn't match, then the media key (e.g. QSFP28-40GBASE-CR4-1M) is looked up, and if there is a match, then those values are fetched and returned.
+
+      Upon transitioning to the Independent mode, the lookup will have to support the new 'lane_speed_key' to accommodate per-speed SI parameters. Hence, instead of just fetching the values in the case of an exact match for the vendor key or media_key, we will first check whether the JSON file supports SI parameters per speed or not. In cases where the JSON file does not provide such support, the values will be obtained from the existing hierarchy level, just as it is done currently.
+
+      However, if the 'media_settings.json' file does support SI parameters per speed, we will proceed to search for the 'lane_speed_key' in the subsequent hierarchy level and return the corresponding values accordingly. If no relevant values are found, an empty dictionary will be returned.
+
+      Determining whether the JSON file supports per-speed SI parameters or not will be done by searching for the presence of the string "speed:" in the relevant hierarchy level, which is the prefix of each 'lane_speed_key'. This determination is essential to ensure the compatibility of the code with vendors whose 'media_settings.json' does not include per-speed SI parameters.
+
+ 
+      ```python
+      def get_media_settings_value(physical_port, key):
+
+        if PORT_MEDIA_SETTINGS_KEY in g_dict:
+          for keys in g_dict[PORT_MEDIA_SETTINGS_KEY]:
+              if int(keys) == physical_port:
+                  media_dict = g_dict[PORT_MEDIA_SETTINGS_KEY][keys]
+                  break
+
+          if vendor_key in media_dict:
+            if is_si_per_speed_supported(media_dict[vendor_key]):
+                if lane_speed_key in media_dict[vendor_key]:
+                    return media_dict[vendor_key][lane_speed_key]
+                else:
+                    return {}
+            else:
+                return media_dict[vendor_key]
+          elif media_key in media_dict:
+            if is_si_per_speed_supported(media_dict[media_key]):
+                if lane_speed_key in media_dict[media_key]:
+                    return media_dict[media_key][lane_speed_key]
+                else:
+                    return {}
+            else:
+                return media_dict[media_key]
+          elif DEFAULT_KEY in media_dict:
+              return media_dict[DEFAULT_KEY]
+          elif len(default_dict) != 0:
+              return default_dict
+
+        return {}
+      ```
+
+</br>
+
+
+
+
+
+3. Ports Orchagent Additions: To support the new SI parameters being transmitted to SAI, it is necessary to integrate them into the existing data flow between APP_DB and SAI. This process takes place within Ports Orchagent: it begins with an operation known as "doPortTask(Consumer&)," a function that is executed only upon the occurrence of specific events. In our case, the PortOrch::doTask(consumer&) function monitors changes in APP_DB and is activated only after APP_DB is updated (during the execution of notify_media_settings()). After that, Ports Orchagent iterates through all the key-value pairs written to APP_DB and uses a function called "ParsePortSerdes()" to create a PortConfig object, responsible for storing all SI values, along with other data. Then, Ports Orchagent invokes the "getPortSerdesAttr()" method, which creates a mapping between the SI values, written to the PortConfig object, to the corresponding SAI attributes. Eventually, this mapping is transmitted to the "setPortSerdesAttribute()" method, that sends it to SAI through the SAI_PORT_API.
+These are the changes necessary to enable this flow to support the new SI parameters:
+
     
+orchagent/port/porthlpr.cpp:
   ```cpp
-void PortsOrch::doPortTask(Consumer &consumer) {
-      bool serdes_param_set = false;
-      for every operation done on APP_DB{
-          if (op == SET_COMMAND){
-              ...
-              if (fvField(i) == <some_new_SI_param>)
-              {
-                      serdes_param_set = true;
-                      getPortSerdesVal(fvValue(i), attr_val);
-                      serdes_attr.insert(serdes_attr_pair(SAI_PORT_SERDES_ATTR_SOME_SI_PARAM, attr_val));
-              }
-              ...
-  
-              if(p.m_admin_state_up && serdes_param_set){
-                  setPortAdminStatus(port, false)
-              }
-  
-              setPortSerdesAttribute(port, gSwitchId, serdes_attr)
-  
-              setPortAdminStatus(port, true)
-          }
-      }
-  }
+bool PortHelper::parsePortConfig(PortConfig &port) const
+{
+    for (const auto &cit : port.fieldValueMap)
+    {
+        const auto &field = cit.first;
+        const auto &value = cit.second;
+
+        else if (field == PORT_PREEMPHASIS)
+            if (!this->parsePortSerdes(port.serdes.preemphasis, field, value))
+                return false;
+        
+		    ...
+
+
+        else if (field == PORT_OB_M2LP)
+            if (!this->parsePortSerdes(port.serdes.ob_m2lp, field, value))
+                return false;
+
+        else if (field == PORT_OB_ALEV_OUT)
+            if (!this->parsePortSerdes(port.serdes.ob_alev_out, field, value))
+                return false;
+
+        else if (field == PORT_OBPLEV)
+            if (!this->parsePortSerdes(port.serdes.obplev, field, value))
+                return false;
+			
+        else if (field == PORT_OBNLEV)
+            if (!this->parsePortSerdes(port.serdes.obnlev, field, value))
+                return false;
+
+
+        else if (field == PORT_REGN_BFM1P)
+            if (!this->parsePortSerdes(port.serdes.regn_bfm1p, field, value))
+                return false;
+
+        else if (field == PORT_REGN_BFM1N)
+            if (!this->parsePortSerdes(port.serdes.regn_bfm1n, field, value))
+                return false;
+
+		    ...
+
+
+        else
+            SWSS_LOG_WARN("Unknown field(%s): skipping ...", field.c_str());
+    }
+    return this->validatePortConfig(port);
+}
+
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::preemphasis) &serdes, const std::string &field, const std::string &value) const;
+...
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::ob_m2lp) &serdes, const std::string &field, const std::string &value) const;
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::ob_alev_out) &serdes, const std::string &field, const std::string &value) const;
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::obplev) &serdes, const std::string &field, const std::string &value) const;
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::obnlev) &serdes, const std::string &field, const std::string &value) const;
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::regn_bfm1p) &serdes, const std::string &field, const std::string &value) const;
+template bool PortHelper::parsePortSerdes(decltype(PortSerdes_t::regn_bfm1n) &serdes, const std::string &field, const std::string &value) const;
   ```
 
 
+
+orchagent/portsorch.cpp:
+```cpp
+static void getPortSerdesAttr(PortSerdesAttrMap_t &map, const PortConfig &port)
+{
+    if (port.serdes.preemphasis.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_PREEMPHASIS] = port.serdes.preemphasis.value;
+    }
+
+	  ...
+	
+	
+    if (port.serdes.ob_m2lp.is_set)
+    {
+    
+        map[SAI_PORT_SERDES_ATTR_TX_PAM4_RATIO] = port.serdes.ob_m2lp.value;
+    }
+
+    if (port.serdes.ob_alev_out.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_TX_OUT_COMMON_MODE] = port.serdes.ob_alev_out.value;
+    }
+
+    if (port.serdes.obplev.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_TX_PMOS_COMMON_MODE] = port.serdes.obplev.value;
+    }
+
+    if (port.serdes.obnlev.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_TX_NMOS_COMMON_MODE] = port.serdes.obnlev.value;
+    }
+
+    if (port.serdes.regn_bfm1p.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_TX_PMOS_VLTG_REG] = port.serdes.regn_bfm1p.value;
+    }
+
+    if (port.serdes.regn_bfm1n.is_set)
+    {
+        map[SAI_PORT_SERDES_ATTR_TX_NMOS_VLTG_REG] = port.serdes.regn_bfm1n.value;
+    }
+}
+  ```
+
+
+orchagent/port/portschema.h:
+```cpp
+#define PORT_OB_M2LP             "ob_m2lp"
+#define PORT_OB_ALEV_OUT         "ob_alev_out"
+#define PORT_OBPLEV              "obplev"
+#define PORT_OBNLEV              "obnlev"
+#define PORT_REGN_BFM1P          "regn_bfm1p"
+#define PORT_REGN_BFM1N          "regn_bfm1n"
+  ```
+
+
+
+orchagent/port/portcnt.h:
+```cpp
+class PortConfig final
+{
+public:
+    PortConfig() = default;
+    ~PortConfig() = default;
+
+    struct {
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } preemphasis; // Port serdes pre-emphasis
+
+		...
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } ob_m2lp; // Port serdes ob_m2lp
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } ob_alev_out; // Port serdes ob_alev_out
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } obplev; // Port serdes obplev
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } obnlev; // Port serdes obnlev
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } regn_bfm1p; // Port serdes regn_bfm1p
+
+        struct {
+            std::vector<std::uint32_t> value;
+            bool is_set = false;
+        } regn_bfm1n; // Port serdes regn_bfm1n
+
+
+    } serdes; // Port serdes
+}
+  ```
 
 
 # Unit Test
