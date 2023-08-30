@@ -1,5 +1,5 @@
 # Feature Name
-Port Signal Integrity by Speed </br></br>
+Port Signal Integrity by Speed Enhancements </br></br>
 # High Level Design Document
 #### Rev 0.2
 
@@ -75,7 +75,7 @@ Important note: Backward compatibility will be maintained. Vendors who wish to c
  </br></br></br>
  
 
-# New SERDES parameters (data)
+# New SERDES parameters
 
 ## Application DB Enhancements
 
