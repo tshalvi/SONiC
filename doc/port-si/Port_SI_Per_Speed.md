@@ -64,7 +64,7 @@ Hence, we want to enhace the current ASIC configuration mechanism to support thi
 # Design
 
 The functionality of configuring the SerDes with the NOS currently exists; However, the configuration is currently limited to the plugged-in module and lacks the capability to differentiate between various lane speeds of a module. </br>
-The suggested enhancement will introduce the following additions:
+The suggested enhancements will introduce the following additions:
 
    1. The ability to support different port SI configurations for different lane speeds.
    2. Expansion of the existing set of supported SI parameters.
@@ -110,10 +110,10 @@ These new SAI attributes were code reviewed by the SAI community and are now mer
 ## Json format for SI parameters
 
 To ensure that these SI values are transmitted properly to SDK, a JSON file, called _media_settings.json_, is used.</br>
-The format of this JSON is going to be modified to support the enhancement of per-speed SI parameters. The updated format is the following: 
+The format of this JSON is going to be modified to support the enhancements of per-speed SI parameters. The updated format is the following: 
 
 
-![Alt text](<updated json after session with Prince George.png>)
+![Alt text](<media_settings_template.png>)
 
 Within the "PORT_MEDIA_SETTINGS" section (or "GLOBAL_MEDIA_SETTINGS" if dealing with port ranges, instead of individual ports), the SI values for each port are organized into four levels of hierarchy:
 
@@ -132,7 +132,7 @@ The flow of using of this json will be referred to as the **_Notify-Media-settin
 
 ![Notify Media Setting Process](Notify-Media-Setting-Process.drawio.svg)
 </br>_The red blocks in this diagram represent required changes in the code._
-
+</br>
 
 During the **_Notify-Media-setting-Process_** three things occur:
 
@@ -229,12 +229,10 @@ Port speed changes require invoking the Notify-Media-Settings-Process becuase af
         return {}
       ```
 
-</br></br>
+</br>
 
 3. Ports Orchagent Additions: Introducing the new SI parameters into the current data flow between APP_DB and SAI.
     
-
-
 
 </br></br></br>
 
