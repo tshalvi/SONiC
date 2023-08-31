@@ -46,9 +46,7 @@ This document is the high level design of the Port SI Per Speed Enhancements fea
 |:----------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------:|
 | [cmis-init.md](https://github.com/sonic-net/SONiC/blob/master/doc/sfp-cmis/cmis-init.md)                                                       |     CMIS initialization HLD.                                     |
 | [Media based port settings in SONiC](https://github.com/sonic-net/SONiC/blob/master/doc/media-settings/Media-based-Port-settings.md)           |     Media based port settings HLD.                               |
-
 </br></br>
-
 
 # Feature Motivation
 Today SONIC already applies port SI configuration. To achieve optimal configuration of their SerDes, some vendors wish to have the option to configure SerDes SI according to lane speed.</br>
