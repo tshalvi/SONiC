@@ -47,7 +47,7 @@ This document is the high level design of the Port SI Per Speed Enhancements fea
 | [cmis-init.md](https://github.com/sonic-net/SONiC/blob/master/doc/sfp-cmis/cmis-init.md)                                                       |     CMIS initialization HLD.                                     |
 | [Media based port settings in SONiC](https://github.com/sonic-net/SONiC/blob/master/doc/media-settings/Media-based-Port-settings.md)           |     Media based port settings HLD.                               |
 
-</br></br></br></br>
+</br></br>
 
 
 # Feature Motivation
@@ -134,7 +134,7 @@ During the **_Notify-Media-setting-Process_** three things occur:
 1. STATE_DB is updated with sfp, dom and pm data.
 2. The APP_DB is updated with the connected module SI parameters. This is achieved through the _notify_media_settings()_ function, which uses the _media_settings.json_ file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup. Then, the lookup is performed, and the relevant data is extracted from the JSON and stored in APP_DB.PORT_TABLE.
 3. Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector (a PortConfig object) that contains the SI values for a certain port and passes it as a whole to the SAI. Port toggling may occur when applying SI parameters: prior to transmitting them to FW, an ADMIN_DOWN signal is sent if the port was previously up.  
-</br></br>
+</br>
 
 ## Port SI configuration (flows)
 
@@ -228,8 +228,6 @@ Port speed changes require invoking the Notify-Media-Settings-Process becuase af
 </br>
 
 3. Ports Orchagent Additions: Introducing the new SI parameters into the current data flow between APP_DB and SAI.
-    
-
 </br></br>
 
 # Unit Test
