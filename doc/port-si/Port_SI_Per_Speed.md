@@ -133,6 +133,7 @@ During the **_Notify-Media-setting-Process_** three things occur:
 2. The APP_DB is updated with the connected module SI parameters. This is achieved through the _notify_media_settings()_ function, which uses the _media_settings.json_ file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup. Then, the lookup is performed, and the relevant data is extracted from the JSON and stored in APP_DB.PORT_TABLE.
 3. Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector (a PortConfig object) that contains the SI values for a certain port and passes it as a whole to the SAI. Port toggling may occur when applying SI parameters: prior to transmitting them to FW, an ADMIN_DOWN signal is sent if the port was previously up.  
 
+
 ## Port SI configuration (flows)
 
 Currently, the Notify-Media-Settings-Process is carried out only in the initialization phase of xcvrd and whenever a module is plugged in. After applying the port SI per speed enhancements, it will also be carried out upon port speed change events: Whenever a port speed change is detected by listening to STATE_DB, Notify-Media-Settings-Process will be called to send the most applicable SI values in the JSON to SAI.
