@@ -95,14 +95,15 @@ Here is the table for mapping the new SI fields and SAI attributes:
 | regn_bfm1n    |     SAI_PORT_SERDES_ATTR_TX_NMOS VLTG_REG         |
 
 
-These new SAI attributes were code reviewed by the SAI community and are now merged, available in the latest version of the sai_port.h file: https://github.com/opencomputeproject/SAI/blob/17a153370438ad2dec7f9e05b69b9f3aec0dc1e0/inc/saiport.h#L3653C5-L3653C40
+These new SAI attributes were code reviewed by the SAI community and are now merged, available in the latest version of the sai_port.h file: https://github.com/opencomputeproject/SAI/blob/master/inc/saiport.h
 </br></br>
 
 
 ## Json format for SI parameters
 
 To ensure that these SI values are transmitted properly to SDK, a JSON file, called _media_settings.json_, is used.</br>
-The format of this JSON is going to be modified to support the enhancements of per-speed SI parameters. The updated format is the following: 
+The format of this JSON is going to be modified to support the dependency on lane speed and the new SI parameters added to APP_DB. </br>
+The updated format is the following: 
 
 
 ![Alt text](<media_settings_template.png>)
@@ -127,12 +128,6 @@ The flow of using this json will be referred to as the **_Notify-Media-setting-P
 </br>_The red blocks in this diagram represent required changes in the code._
 </br>
 
-During the **_Notify-Media-setting-Process_** three things occur:
-
-1. STATE_DB is updated with sfp, dom and pm data.
-2. The APP_DB is updated with the connected module SI parameters. This is achieved through the _notify_media_settings()_ function, which uses the _media_settings.json_ file to write its contents to APP_DB: First, a key is composed for performing the JSON lookup. Then, the lookup is performed, and the relevant data is extracted from the JSON and stored in APP_DB.PORT_TABLE.
-3. Ports OrchAgent listens to changes in APP_DB, so when the APP_DB is updated with SI parameters, PortsOrchagent is triggered. Based on the data found in APP_DB, PortsOA creates a vector (a PortConfig object) that contains the SI values for a certain port and passes it as a whole to the SAI. Port toggling may occur when applying SI parameters: prior to transmitting them to FW, an ADMIN_DOWN signal is sent if the port was previously up.  
-
 
 ## Port SI configuration (flows)
 
@@ -147,7 +142,7 @@ Port speed changes require invoking the Notify-Media-Settings-Process becuase af
 
 1. Changes in SfpStateUpdateTask thread:</br></br>
     With the port SI per speed enhancements applied, we rely on the lane speed when we lookup in _media_settings,json_. Hence, this flow has to be triggered not only by insertion/removal of modules, but by speed configuration changes as well.</br>
-    In order to establish the dependency of port SI configurations on lane speed, we need to be able to monitor speed configuration changes. Therefore, we will add to the SfpStateUpdateTask a listener to detect such changes: a new member will be added to SfpStateUpdateTask to listen to changes in STATE_DB.PORT_TABLE, and once such change is detected, _notify_media_settings()_ will be trigerred. Additionally, the SfpStateUpdateTask thread will have a new member that will store the speed and number of lanes for each port. For the purpose of this discussion, let's refer to it as "_speed_lanecount_dict_".
+    In order to establish the dependency of port SI configurations on lane speed, we need to be able to monitor speed configuration changes. Therefore, we will add to the SfpStateUpdateTask a listener to detect such changes: a new member will be added to SfpStateUpdateTask to listen to changes in STATE_DB.PORT_TABLE, and once such change is detected, _notify_media_settings()_ will be trigerred. Additionally, the SfpStateUpdateTask thread will have a new deictionary that will store the speed and number of lanes for each port.
 </br></br>
 
 
@@ -170,7 +165,7 @@ Port speed changes require invoking the Notify-Media-Settings-Process becuase af
         CAUI-4 C2M (Annex 83E) without FEC - Host Assign (0x11) - Active Cable assembly with BER < 10^-12 - Media Assign (0x11)
       ```
 
-      We will use this list to derive the lane_speed_key. We will iterate over this list and return the item whose port speed and lane count match the port speed and lane count for the corresponding port that were extracted from STATE_DB into _speed_lanecount_dict_ (The mapping between ports and their speeds and lane counts as described earlier).
+      We will use this list to derive the lane_speed_key. We will iterate over this list and return the item whose port speed and lane count match the port speed and lane count for the corresponding port that were extracted from STATE_DB into the newly added dictionary (The mapping between ports and their speeds and lane counts as described earlier).
       The existing method '_get_cmis_application_desired()_' performs exactly this task, so we will use it to calculate the new key.
 
     </br>
@@ -190,7 +185,7 @@ Port speed changes require invoking the Notify-Media-Settings-Process becuase af
       
 
       
-      ```python
+      ```python #10-16
       def get_media_settings_value(physical_port, key):
 
         if PORT_MEDIA_SETTINGS_KEY in g_dict:
