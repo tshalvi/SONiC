@@ -125,7 +125,7 @@ In the first phase of this feature, the changes described below aim to support t
 
 Assumptions:
 1. No changes are expected in the sysfs files provided by the SDK. The existing sysfs structure (e.g., present, reset, lpm, etc.) will continue to function as before. These files will be accessed under the same path: */sys/module/sx_core/$asic/$module/*. The only difference is that the module ID will correspond to the cModule ID.
-2. The SDK will emulate the EEPROM at the offsets required by SONiC (likely only offsets on page 0).
+2. The lower layers will emulate the EEPROM at the offsets required by SONiC (mostly offsets on page 0).
 </br></br>
 
 # Changes to support the CPO platform
@@ -165,7 +165,7 @@ These will be based on the existing SN5640 platform folder and C512S2 SKU folder
             "index": "1,1,1,1,1,1,1,1",
             "lanes": "0,1,2,3,4,5,6,7",
             "breakout_modes": {
-                "2x400G[200G,100G]": ["etp1a", "etp1b"],
+                "2x400G[200G]": ["etp1a", "etp1b"],
                 "4x200G": ["etp1a", "etp1b", "etp1c", "etp1d"],
                 "8x100G": ["etp1a", "etp1b", "etp1c", "etp1d", "etp1e", "etp1f", "etp1g", "etp1h"]
             }
@@ -180,18 +180,18 @@ These will be based on the existing SN5640 platform folder and C512S2 SKU folder
 {
     "interfaces": {
         "Ethernet0": {
-            "default_brkout_mode": "2x400G[200G,100G]",
+            "default_brkout_mode": "2x400G[200G]",
             "port_type": "CPO"
         },
         "Ethernet8": {
-            "default_brkout_mode": "2x400G[200G,100G]",
+            "default_brkout_mode": "2x400G[200G]",
             "port_type": "CPO"
         },
         
         ...
         
         "Ethernet504": {
-            "default_brkout_mode": "2x400G[200G,100G]",
+            "default_brkout_mode": "2x400G[200G]",
             "port_type": "CPO"
         },
         "Ethernet512": {
@@ -247,13 +247,13 @@ All platform-related changes are available in this commit: https://github.com/nv
         return None
 ```
 
-Since the CPO module is compatible with CMIS 5.3 and we aim to minimize changes to SONiC, we can add this module type and map it to the existing CMIS memory map. This will allow SONiC to access the required EEPROM fields seamlessly, with the SDK emulating only the necessary fields—eliminating the need for additional code changes.
+Since the CPO module is compatible with CMIS 5.3 and we aim to minimize changes to SONiC, we can add this module type and map it to the existing CMIS memory map. This will allow SONiC to access the required EEPROM fields seamlessly, with the lower layers emulating only the necessary fields—eliminating the need for additional code changes.
 
   - Update the New Module Type in XCVR_IDENTIFIERS: The XCVR_IDENTIFIERS dictionary maps module types (found at page 0, byte 0 of the module's EEPROM) to strings displayed in various CLI outputs, such as the *show interfaces status* command. To support the CPO module, this dictionary must be updated with the value emulated by the SDK at page 0, byte 0 of the EEPROM: https://github.com/sonic-net/sonic-platform-common/blob/fad0a144e1215c91e6bbfee761b40cdd1615a614/sonic_platform_base/sonic_xcvr/codes/public/sff8024.py#L10
 
   - The chassis.get_num_sfps() method returns the number of plugged-in modules but currently only considers SFP-type modules. It should be updated to also include CPO ports in the count. Our SKU includes only two SFPs, so without accounting for the CPO ports, we won’t be able to interact with modules whose index > 2.   
   This can be seen here: https://github.com/sonic-net/sonic-buildimage/blob/d02ec51ca00e468d16d627b06e0da8837256650a/platform/mellanox/mlnx-platform-api/sonic_platform/chassis.py#L270 (Without the suggested code change, sfp_count will always be 2, meaning only two modules can be initialized)  
-  *** Renaming get_num_sfps() to something else (since CPO is not an SFP by definition) would require changes in community code. This needs to be discussed.
+  *** CPO is not an SFP by definition, so get_num_sfps() will be renamed.
 
   ```python
 class Chassis(ChassisBase):
@@ -345,5 +345,5 @@ Each port should:
 
 * Be displayed with type "CPO"
 * Have its transceiver information present in the TRANSCEIVER_INFO table
-* Expose all required EEPROM fields, emulated as expected by the SDK (Verification tests should align with the list of EEPROM fields the SDK emulates for CPO)
+* Expose all required EEPROM fields, emulated as expected by the lower layers (Verification tests should align with the list of EEPROM fields the SDK emulates for CPO)
 * Respond correctly to all relevant sfputil commands (Already being covered by Verification tests)
