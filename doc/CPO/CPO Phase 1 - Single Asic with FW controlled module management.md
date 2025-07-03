@@ -208,7 +208,6 @@ These will be based on the existing SN5640 platform folder and C512S2 SKU folder
     - Omit the Independent Module flag in sai.profile.
     - Set skip_xcvrd_cmis_mgr=true in pmon_daemon_control.json.
     - Exclude SI-related JSONs.
-    - Firmware will also disable independent module behavior via its INI file.
 
 
 All platform-related changes are available in this commit: https://github.com/nvidia-sonic/sonic-buildimage/commit/120816ecb98b9fe02c02a77411c9fd249f58aa9f     
