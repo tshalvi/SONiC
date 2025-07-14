@@ -13,6 +13,7 @@ CPO Phase 1 - Single Asic with FW controlled module management
     * [Motivation](#motivation)
     * [System Overview](#system-overview)
     * [Modules in CPO](#modules-in-cpo)
+    * [Interface to cModule Mapping](#interface-to-cmodule-mapping)
     * [Linkup Flow in CPO](#linkup-flow-in-cpo)
     * [Design Scope And Assumptions](#design-scope-and-assumptions)
   * [Changes to support the CPO platform](#changes-to-support-the-cpo-platform)
@@ -102,6 +103,32 @@ These components are internal to the FW/SDK and are not exposed to the operating
 ![Alt text](<cModules.png>)
 </br></br>
 
+
+
+## Interface to cModule Mapping
+
+There is a fixed, one-to-one mapping between each interface and its corresponding cModule.  
+This mapping is not dynamically calculated at runtime—it is explicitly defined and retrieved from the CONFIG_DB, ensuring consistent access and reducing performance overhead.  
+For example, when accessing sysfs entries, the system simply looks up the mapping in the database.  
+
+Each interface maps to a single cModule, with no shared or dynamic associations. This mapping is defined in the platform.json file under the interfaces section. Specifically, the index field in each interface entry indicates the associated cModule number, using the formula:
+cModule# = index - 1.
+This information is stored in CONFIG_DB.PORT_TABLE.
+
+Each cModule manages 32 physical lanes and corresponds to 4 interfaces. For example:  
+
+Ethernet0–Ethernet31 have "index": 1 → they use cModule #0  
+Ethernet32–Ethernet63 have "index": 2 → they use cModule #1  
+...  
+Ethernet480–Ethernet511 have "index": 16 → they use cModule #15  
+
+The complete mapping can be found in platform.json.
+
+When a sysfs entry for interface[X] is accessed, the system first retrieves the associated cModule ID [Y] from CONFIG_DB using the index field—exactly as done today. That cModule ID is then used to construct the sysfs path in the format:
+/sys/module/sx_core/$asic/module[Y]/
+
+
+
 ## Linkup Flow in CPO
 
 ![Alt text](<linkup_flow.png>)
@@ -116,8 +143,16 @@ The flow is as follows:
 
 This allows SONiC and SAI to remain unchanged, while the SDK handles all hardware-specific mapping internally.
 
-Port breakout is fully supported for single ASIC CPO. Supported number of lanes per physical port: 4/2/1.
+Static Port breakout is fully supported for single ASIC CPO- Supported breakout modes:
+•	2 x 400G
+•	4 x 200G
+•	8 x 100G
+Each lane will operate at 100G (200G on SPC6).
+Dynmaic port breakout is out of scope.
+
 </br></br>
+
+
 
 ## Design Scope And Assumptions
 
