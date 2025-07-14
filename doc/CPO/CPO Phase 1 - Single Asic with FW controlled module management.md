@@ -143,15 +143,15 @@ The flow is as follows:
 
 This allows SONiC and SAI to remain unchanged, while the SDK handles all hardware-specific mapping internally.
 
-Static Port breakout is fully supported for single ASIC CPO- Supported breakout modes:
-•	2 x 400G
-•	4 x 200G
-•	8 x 100G
-Each lane will operate at 100G (200G on SPC6).
-Dynmaic port breakout is out of scope.
+Static Port breakout is fully supported for single ASIC CPO- Supported breakout modes:  
+- 2 x 400G  
+- 4 x 200G  
+- 8 x 100G   
 
-</br></br>
+Each lane will operate at 100G (200G on SPC6).  
+Dynmaic port breakout is out of scope.  
 
+</br>
 
 
 ## Design Scope And Assumptions
@@ -205,7 +205,103 @@ These will be based on the existing SN5640 platform folder and C512S2 SKU folder
                 "8x100G": ["etp1a", "etp1b", "etp1c", "etp1d", "etp1e", "etp1f", "etp1g", "etp1h"]
             }
         },
-    
+        "Ethernet8": {
+            "index": "1,1,1,1,1,1,1,1",
+            "lanes": "8,9,10,11,12,13,14,15",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp2a", "etp2b"],
+                "4x200G": ["etp2a", "etp2b", "etp2c", "etp2d"],
+                "8x100G": ["etp2a", "etp2b", "etp2c", "etp2d", "etp2e", "etp2f", "etp2g","etp2h"]
+            }
+        },
+        "Ethernet16": {
+            "index": "1,1,1,1,1,1,1,1",
+            "lanes": "16,17,18,19,20,21,22,23",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp3a", "etp3b"],
+                "4x200G": ["etp3a", "etp3b", "etp3c", "etp3d"],
+                "8x100G": ["etp3a", "etp3b", "etp3c", "etp3d", "etp3e", "etp3f", "etp3g", "etp3h"]
+            }
+        },
+        "Ethernet24": {
+            "index": "1,1,1,1,1,1,1,1",
+            "lanes": "24,25,26,27,28,29,30,31",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp4a", "etp4b"],
+                "4x200G": ["etp4a", "etp4b", "etp4c", "etp4d"],
+                "8x100G": ["etp4a", "etp4b", "etp4c", "etp4d", "etp4e", "etp4f", "etp4g", "etp4h"]
+            }
+        },
+        "Ethernet32": {
+            "index": "2,2,2,2,2,2,2,2",
+            "lanes": "32,33,34,35,36,37,38,39",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp5a", "etp5b"],
+                "4x200G": ["etp5a", "etp5b", "etp5c", "etp5d"],
+                "8x100G": ["etp5a", "etp5b", "etp5c", "etp5d", "etp5e", "etp5f", "etp5g", "etp5h"]
+            },
+
+        ...
+        
+        "Ethernet472": {
+            "index": "15,15,15,15,15,15,15,15",
+            "lanes": "472,473,474,475,476,477,478,479",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp60a", "etp60b"],
+                "4x200G": ["etp60a", "etp60b", "etp60c", "etp60d"],
+                "8x100G": ["etp60a", "etp60b", "etp60c", "etp60d", "etp60e",  "etp60f", "etp60g", "etp60h"]
+            }
+        },
+        "Ethernet480": {
+            "index": "16,16,16,16,16,16,16,16",
+            "lanes": "480,481,482,483,484,485,486,487",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp61a", "etp61b"],
+                "4x200G": ["etp61a", "etp61b", "etp61c", "etp61d"],
+                "8x100G": ["etp61a", "etp61b", "etp61c",  "etp61d", "etp61e", "etp61f", "etp61g", "etp61h"]
+            }
+        },
+        "Ethernet488": {
+            "index": "16,16,16,16,16,16,16,16",
+            "lanes": "488,489,490,491,492,493,494,495",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp62a", "etp62b"],
+                "4x200G": ["etp62a", "etp62b", "etp62c", "etp62d"],
+                "8x100G": ["etp62a", "etp62b", "etp62c", "etp62d", "etp62e",  "etp62f", "etp62g", "etp62h"]
+            }
+        },
+        "Ethernet496": {
+            "index": "16,16,16,16,16,16,16,16",
+            "lanes": "496,497,498,499,500,501,502,503",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp63a", "etp63b"],
+                "4x200G": ["etp63a", "etp63b", "etp63c", "etp63d"],
+                "8x100G": ["etp63a", "etp63b", "etp63c", "etp63d", "etp63e", "etp63f", "etp63g", "etp63h"]
+            }
+        },
+        "Ethernet504": {
+            "index": "16,16,16,16,16,16,16,16",
+            "lanes": "504,505,506,507,508,509,510,511",
+            "breakout_modes": {
+                "2x400G[200G]": ["etp64a", "etp64b"],
+                "4x200G": ["etp64a", "etp64b", "etp64c", "etp64d"],
+                "8x100G": ["etp64a", "etp64b", "etp64c", "etp64d", "etp64e", "etp64f", "etp64g", "etp64h"]
+            }
+        },
+        "Ethernet512": {
+            "index": "17",
+            "lanes": "512",
+            "breakout_modes": {
+                "1x25G[10G]": ["etp65"]
+            }
+        },
+        "Ethernet520": {
+            "index": "18",
+            "lanes": "520",
+            "breakout_modes": {
+                "1x25G[10G]": ["etp66"]
+            }
+        }
     ...
 ```
 
