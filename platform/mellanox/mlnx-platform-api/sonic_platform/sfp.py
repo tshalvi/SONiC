@@ -1763,3 +1763,36 @@ class RJ45Port(NvidiaSFPCommon):
         """
         status = super().get_module_status()
         return SFP_STATUS_REMOVED if status == SFP_STATUS_UNKNOWN else status
+
+
+class CpoPort(SFP):
+    """class derived from SFP, representing CPO ports"""
+
+    def __init__(self, sfp_index):
+        super(CpoPort, self).__init__(sfp_index)
+        self._sfp_type_str = None
+        self.sfp_type = CPO_TYPE
+
+    def get_transceiver_info(self):
+        transceiver_info_dict = super().get_transceiver_info()
+        transceiver_info_dict['type'] = self.sfp_type
+        return transceiver_info_dict
+
+    def get_xcvr_api(self):
+        if self._xcvr_api is None:
+            self._xcvr_api = self._xcvr_api_factory._create_api(cmis_codes.CmisCodes, cmis_mem.CmisMemMap, cmis_api.CmisApi)
+        return self._xcvr_api
+
+    def get_presence(self):
+        file_path = SFP_SDK_MODULE_SYSFS_ROOT_TEMPLATE.format(self.sdk_index) + SFP_SYSFS_PRESENT
+        present = utils.read_int_from_file(file_path)
+        return present == 1
+
+    def reinit(self):
+        """
+        Nothing to do for cpo. Just provide it to avoid exception
+        :return:
+        """
+        return
+
+
