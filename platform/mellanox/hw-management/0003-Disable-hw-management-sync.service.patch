@@ -13,7 +13,7 @@ Signed-off-by: Jianyue Wu <jianyuew@nvidia.com>
  2 files changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/debian/hw-management.hw-management.service b/debian/hw-management.hw-management.service
-index 634b4014..e6f96743 100755
+index d0739a85..b2a9041e 100755
 --- a/debian/hw-management.hw-management.service
 +++ b/debian/hw-management.hw-management.service
 @@ -1,7 +1,6 @@
@@ -21,9 +21,9 @@ index 634b4014..e6f96743 100755
  Description=Chassis HW management service of Nvidia systems
  Documentation=man:hw-management.service(8)
 -Wants=hw-management-sync.service
- Wants=hw-management-sysfs-monitor.service
- Wants=hw-management-fast-sysfs-monitor.service
  Before=determine-reboot-cause.service system-health.service watchdog-control.service
+ 
+ [Service]
 diff --git a/debian/rules b/debian/rules
 index e75aa289..0d747728 100755
 --- a/debian/rules
