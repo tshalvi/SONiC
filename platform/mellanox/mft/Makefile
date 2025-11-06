@@ -21,7 +21,7 @@ SHELL = /bin/bash
 ifeq ($(CONFIGURED_ARCH), amd64)
 MFT_ARCH = x86_64
 else
-MFT_ARCH = $(CONFIGURED_ARCH)
+MFT_ARCH = aarch64
 endif
 
 MFT_NAME = mft-$(MFT_VERSION)-$(MFT_REVISION)-$(MFT_ARCH)-deb
