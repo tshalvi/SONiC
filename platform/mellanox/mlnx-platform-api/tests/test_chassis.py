@@ -39,6 +39,7 @@ from sonic_platform.chassis import Chassis, SmartSwitchChassis
 from sonic_platform.device_data import DeviceDataManager
 
 sonic_platform.chassis.extract_RJ45_ports_index = mock.MagicMock(return_value=[])
+sonic_platform.chassis.extract_cpo_ports_index = mock.MagicMock(return_value=[])
 
 class TestChassis:
     """Test class to test chassis.py. The test cases covers:
@@ -180,6 +181,13 @@ class TestChassis:
         chassis = Chassis()
         assert chassis.get_num_sfps() == 6
         sonic_platform.chassis.extract_RJ45_ports_index = mock.MagicMock(return_value=[])
+
+        # Get all SFPs, with CPO ports
+        sonic_platform.chassis.extract_cpo_ports_index = mock.MagicMock(return_value=[3, 4])
+        DeviceDataManager.get_sfp_count = mock.MagicMock(return_value=3)
+        chassis = Chassis()
+        assert chassis.get_num_sfps() == 5
+        sonic_platform.chassis.extract_cpo_ports_index = mock.MagicMock(return_value=[])
 
     @mock.patch('sonic_platform.device_data.DeviceDataManager.is_module_host_management_mode', mock.MagicMock(return_value=False))
     def test_create_sfp_in_multi_thread(self):

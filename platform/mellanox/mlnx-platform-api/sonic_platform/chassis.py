@@ -31,6 +31,7 @@ try:
     from sonic_py_common import device_info
     from functools import reduce
     from .utils import extract_RJ45_ports_index
+    from .utils import extract_cpo_ports_index
     from . import module_host_mgmt_initializer
     from . import utils
     from .device_data import DeviceDataManager
@@ -126,8 +127,11 @@ class Chassis(ChassisBase):
         self._RJ45_port_inited = False
         self._RJ45_port_list = None
 
-        self.liquid_cooling = None
+        # Build the CPO port list from platform.json and hwsku.json
+        self._cpo_port_inited = False
+        self._cpo_port_list = None
 
+        self.liquid_cooling = None
         Chassis.chassis_instance = self
 
         self.module_host_mgmt_initializer = module_host_mgmt_initializer.ModuleHostMgmtInitializer()
@@ -150,6 +154,13 @@ class Chassis(ChassisBase):
             self._RJ45_port_list = extract_RJ45_ports_index()
             self._RJ45_port_inited = True
         return self._RJ45_port_list
+
+    @property
+    def cpo_port_list(self):
+        if not self._cpo_port_inited:
+            self._cpo_port_list = extract_cpo_ports_index()
+            self._cpo_port_inited = True
+        return self._cpo_port_list
 
     ##############################################
     # PSU methods
@@ -295,6 +306,8 @@ class Chassis(ChassisBase):
                         sfp_module = self._import_sfp_module()
                         if self.RJ45_port_list and index in self.RJ45_port_list:
                             self._sfp_list[index] = sfp_module.RJ45Port(index)
+                        elif self.cpo_port_list and index in self.cpo_port_list:
+                            self._sfp_list[index] = sfp_module.CpoPort(index)
                         else:
                             self._sfp_list[index] = sfp_module.SFP(index)
                         self.sfp_initialized_count += 1
@@ -312,6 +325,8 @@ class Chassis(ChassisBase):
                         for index in range(sfp_count):
                             if self.RJ45_port_list and index in self.RJ45_port_list:
                                 sfp_object = sfp_module.RJ45Port(index)
+                            elif self.cpo_port_list and index in self.cpo_port_list:
+                                sfp_object = sfp_module.CpoPort(index)
                             else:
                                 sfp_object = sfp_module.SFP(index)
                             self._sfp_list.append(sfp_object)
@@ -322,6 +337,8 @@ class Chassis(ChassisBase):
                             if self._sfp_list[index] is None:
                                 if self.RJ45_port_list and index in self.RJ45_port_list:
                                     self._sfp_list[index] = sfp_module.RJ45Port(index)
+                                elif self.cpo_port_list and index in self.cpo_port_list:
+                                    self._sfp_list[index] = sfp_module.CpoPort(index)
                                 else:
                                     self._sfp_list[index] = sfp_module.SFP(index)
                         self.sfp_initialized_count = len(self._sfp_list)
@@ -333,13 +350,22 @@ class Chassis(ChassisBase):
         Returns:
             An integer, the number of sfps available on this chassis
         """
+        num_sfps = 0
         if not self._RJ45_port_inited:
             self._RJ45_port_list = extract_RJ45_ports_index()
             self._RJ45_port_inited = True
+        
+        if not self._cpo_port_inited:
+            self._cpo_port_list = extract_cpo_ports_index()
+            self._cpo_port_inited = True
+        
+        num_sfps = DeviceDataManager.get_sfp_count()
         if self._RJ45_port_list is not None:
-            return DeviceDataManager.get_sfp_count() + len(self._RJ45_port_list)
-        else:
-            return DeviceDataManager.get_sfp_count()
+            num_sfps += len(self._RJ45_port_list)
+        if self._cpo_port_list is not None:
+            num_sfps += len(self._cpo_port_list)
+        
+        return num_sfps
 
     def get_all_sfps(self):
         """

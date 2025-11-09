@@ -29,7 +29,7 @@ test_path = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(test_path)
 sys.path.insert(0, modules_path)
 
-from sonic_platform.sfp import SFP, NvidiaSFPCommon, RJ45Port, SX_PORT_MODULE_STATUS_INITIALIZING, SX_PORT_MODULE_STATUS_PLUGGED, SX_PORT_MODULE_STATUS_UNPLUGGED, SX_PORT_MODULE_STATUS_PLUGGED_WITH_ERROR, SX_PORT_MODULE_STATUS_PLUGGED_DISABLED
+from sonic_platform.sfp import SFP, NvidiaSFPCommon, RJ45Port, CpoPort, CPO_TYPE, cmis_api, SX_PORT_MODULE_STATUS_INITIALIZING, SX_PORT_MODULE_STATUS_PLUGGED, SX_PORT_MODULE_STATUS_UNPLUGGED, SX_PORT_MODULE_STATUS_PLUGGED_WITH_ERROR, SX_PORT_MODULE_STATUS_PLUGGED_DISABLED
 from sonic_platform.chassis import Chassis
 
 
@@ -325,6 +325,18 @@ class TestSfp:
         assert sfp.get_transceiver_threshold_info()
         sfp.reinit()
 
+    @mock.patch('sonic_platform.sfp.CpoPort.read_eeprom')
+    def test_cpo_get_xcvr_api(self, mock_read):
+        sfp = CpoPort(0)
+        api = sfp.get_xcvr_api()
+        assert isinstance(api, cmis_api.CmisApi)
+
+    @mock.patch('sonic_platform.sfp.SfpOptoeBase.get_transceiver_info', return_value={})
+    def test_cpo_get_transceiver_info(self, mock_get_info):
+        sfp = CpoPort(0)
+        info = sfp.get_transceiver_info()
+        assert info['type'] == CPO_TYPE
+
     @mock.patch('sonic_platform.utils.read_int_from_file')
     @mock.patch('sonic_platform.device_data.DeviceDataManager.is_module_host_management_mode')
     def test_is_sw_control(self, mock_mode, mock_read):
@@ -460,6 +472,7 @@ class TestSfp:
         assert error_desc is None
 
     @mock.patch('sonic_platform.chassis.extract_RJ45_ports_index', mock.MagicMock(return_value=[]))
+    @mock.patch('sonic_platform.chassis.extract_cpo_ports_index', mock.MagicMock(return_value=[]))
     @mock.patch('sonic_platform.device_data.DeviceDataManager.get_sfp_count', mock.MagicMock(return_value=1))
     def test_initialize_sfp_modules(self):
         c = Chassis()
