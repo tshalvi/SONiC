@@ -94,8 +94,13 @@ class BMC(BMCBase):
             from sonic_py_common import device_info
             bmc_data = device_info.get_bmc_data()
             if not bmc_data:
+                logger.log_error("BMC data not found")
                 return None
-            BMC._instance = BMC(bmc_data['bmc_addr'])
+            bmc_addr = bmc_data.get('bmc_addr')
+            if not bmc_addr:
+                logger.log_error("BMC address not found in bmc_data")
+                return None
+            BMC._instance = BMC(bmc_addr)
         return BMC._instance
 
     def _get_login_user_callback(self):
@@ -106,13 +111,13 @@ class BMC(BMCBase):
             return self._get_tpm_password()
         else:
             return BMC.BMC_NOS_ACCOUNT_DEFAULT_PASSWORD
-    
+
     def _get_default_root_password(self):
         return BMC.ROOT_ACCOUNT_DEFAULT_PASSWORD
-    
+
     def _get_firmware_id(self):
         return BMC.BMC_FIRMWARE_ID
-    
+
     def _get_eeprom_id(self):
         return BMC.BMC_EEPROM_ID
 
@@ -185,7 +190,7 @@ class BMC(BMCBase):
         which calls _login and _restore_tpm_credential, in order to prevent infinite loop.
         """
         return self.rf_client.redfish_api_change_login_password(password, user)
-    
+
     def reset_root_password(self):
         """
         Override BMCBase reset_root_password because we need to call _login and _logout explicitly

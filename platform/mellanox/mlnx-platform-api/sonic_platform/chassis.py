@@ -820,7 +820,7 @@ class Chassis(ChassisBase):
             self._component_list.append(ComponentSSD())
             self._component_list.append(DeviceDataManager.get_bios_component())
             self._component_list.extend(DeviceDataManager.get_cpld_component_list())
-        
+
         # Initialize BMC and its components
         self.initialize_bmc()
 

@@ -52,7 +52,7 @@ class TestBMC:
         with open(eeprom_dict_file_path, 'r') as f:
             data = f.read()
             expected_eeprom_data = json.loads(data)
-        
+
         mock_get_eeprom_info.return_value = (RedfishClient.ERR_CODE_OK, expected_eeprom_data)
 
         bmc = BMC.get_instance()

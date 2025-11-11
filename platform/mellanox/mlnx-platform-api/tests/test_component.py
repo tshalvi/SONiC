@@ -41,7 +41,7 @@ from sonic_platform.component import ComponentONIE,       \
                                      ONIEUpdater,         \
                                      ComponentBMC,        \
                                      Component
-from sonic_platform.bmc import BMC
+
 from sonic_platform_base.component_base import FW_AUTO_INSTALLED,      \
                                                FW_AUTO_UPDATED,        \
                                                FW_AUTO_SCHEDULED,      \
@@ -575,7 +575,7 @@ class TestComponent:
         assert c._check_file_validity(os.path.abspath(__file__))
         c.image_ext_name = '.txt'
         assert not c._check_file_validity(os.path.abspath(__file__))
-    
+
     @mock.patch('sonic_platform.bmc.BMC._get_component_list', \
         mock.MagicMock(return_value=[MockBMCComponent()]))
     @mock.patch('sonic_py_common.device_info.get_bmc_data', \
@@ -588,7 +588,6 @@ class TestComponent:
     def test_bmc_update_firmware(self, mock_bmc_reset, mock_update_fw):
         mock_update_fw.return_value = (RedfishClient.ERR_CODE_OK, '')
         mock_bmc_reset.return_value = (RedfishClient.ERR_CODE_OK, '')
-        
         component = ComponentBMC()
         ret = component.install_firmware('fake_image.fwpkg')
         assert True == ret

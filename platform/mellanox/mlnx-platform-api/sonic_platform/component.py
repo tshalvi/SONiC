@@ -927,17 +927,38 @@ class ComponentBMC(Component):
         self.name = self.COMPONENT_NAME
         self.description = self.COMPONENT_DESCRIPTION
         self.image_ext_name = self.COMPONENT_FIRMWARE_EXTENSION
-    
+
     def get_firmware_version(self):
+        """
+        Retrieves the BMC firmware version
+
+        Returns:
+            A string containing the BMC firmware version.
+            Returns 'N/A' if the BMC firmware version cannot be retrieved.
+        """
+        if self.bmc is None:
+            return 'N/A'
         return self.bmc.get_version()
-    
+
     def get_available_firmware_version(self, image_path):
         raise NotImplementedError("BMC component doesn't support available firmware version query")
-    
+
     def get_firmware_update_notification(self, image_path):
         return "BMC will be automatically restarted to complete BMC firmware update"
 
     def install_firmware(self, image_path):
+        """
+        Installs the BMC firmware
+
+        Args:
+            image_path: A string, path to firmware image
+
+        Returns:
+            A boolean, True if the BMC firmware is installed successfully, False otherwise.
+        """
+        if self.bmc is None:
+            print("Failed to get BMC instance")
+            return False
         if not self._check_file_validity(image_path):
             print(f"Invalid firmware image path: {image_path}")
             return False

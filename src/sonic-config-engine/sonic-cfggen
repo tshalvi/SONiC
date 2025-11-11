@@ -350,7 +350,7 @@ def main():
     if platform:
         bmc_data = device_info.get_bmc_data()
     if bmc_data:
-        for key,value in bmc_data.items():
+        for key, value in bmc_data.items():
             deep_update(data, {'DEVICE_METADATA': {'bmc': {key:value}}})
 
     db_kwargs = {}
