@@ -94,7 +94,7 @@ class BMC(BMCBase):
             from sonic_py_common import device_info
             bmc_data = device_info.get_bmc_data()
             if not bmc_data:
-                logger.log_error("BMC data not found")
+                # BMC is not present on this platform - missing bmc.json
                 return None
             bmc_addr = bmc_data.get('bmc_addr')
             if not bmc_addr:
