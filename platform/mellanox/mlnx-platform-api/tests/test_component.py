@@ -49,15 +49,6 @@ from sonic_platform_base.component_base import FW_AUTO_INSTALLED,      \
                                                FW_AUTO_ERR_IMAGE,      \
                                                FW_AUTO_ERR_UNKNOWN
 
-from sonic_platform_base.redfish_client import RedfishClient
-
-class MockBMCComponent:
-    def get_firmware_id(self):
-        return 'MGX_FW_BMC_0'
-
-    def get_name(self):
-        return 'BMC'
-
 
 class TestComponent:
     @mock.patch('sonic_platform.chassis.utils.is_host')
@@ -576,18 +567,16 @@ class TestComponent:
         c.image_ext_name = '.txt'
         assert not c._check_file_validity(os.path.abspath(__file__))
 
-    @mock.patch('sonic_platform.bmc.BMC._get_component_list', \
-        mock.MagicMock(return_value=[MockBMCComponent()]))
-    @mock.patch('sonic_py_common.device_info.get_bmc_data', \
-                mock.MagicMock(return_value={'bmc_addr': '169.254.0.1'}))
-    @mock.patch('sonic_platform.bmc.BMC._get_tpm_password', mock.MagicMock(return_value=''))
-    @mock.patch('sonic_platform.component.ComponentBMC._check_file_validity', \
+    @mock.patch('sonic_platform.component.subprocess.check_call')
+    @mock.patch('sonic_platform.component.ComponentBMC._check_file_validity', 
                 mock.MagicMock(return_value=True))
-    @mock.patch('sonic_platform.bmc.BMC.update_firmware')
-    @mock.patch('sonic_platform.bmc.BMC.request_bmc_reset')
-    def test_bmc_update_firmware(self, mock_bmc_reset, mock_update_fw):
-        mock_update_fw.return_value = (RedfishClient.ERR_CODE_OK, '')
-        mock_bmc_reset.return_value = (RedfishClient.ERR_CODE_OK, '')
+    def test_bmc_update_firmware(self, mock_check_call):
+        mock_check_call.return_value = None
         component = ComponentBMC()
         ret = component.install_firmware('fake_image.fwpkg')
-        assert True == ret
+        mock_check_call.assert_called_once_with(
+            ["/usr/bin/mlnx-bmc-fw-update.py", 'fake_image.fwpkg'],
+            universal_newlines=True,
+            start_new_session=True
+        )
+        assert ret == True

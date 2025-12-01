@@ -919,6 +919,7 @@ class ComponentBMC(Component):
     COMPONENT_NAME = 'BMC'
     COMPONENT_DESCRIPTION = 'BMC - Baseboard Management Controller'
     COMPONENT_FIRMWARE_EXTENSION = ['.fwpkg']
+    BMC_FW_UPDATE_CMD = ["/usr/bin/mlnx-bmc-fw-update.py", ""]
 
     def __init__(self):
         super(ComponentBMC, self).__init__()
@@ -956,29 +957,27 @@ class ComponentBMC(Component):
         Returns:
             A boolean, True if the BMC firmware is installed successfully, False otherwise.
         """
-        if self.bmc is None:
-            print("Failed to get BMC instance")
-            return False
         if not self._check_file_validity(image_path):
             print(f"Invalid firmware image path: {image_path}")
             return False
         print('Starting BMC firmware update, path={}'.format(image_path))
         try:
-            ret, error_msg = self.bmc.update_firmware(image_path)
-            if ret != 0:
-                print(f'Fail to update BMC firmware. Error {ret}: {error_msg}')
-                return False
-            print('Successfully updated BMC firmware, restarting BMC...')
-            ret, error_msg = self.bmc.request_bmc_reset()
-            if ret != 0:
-                print(f'Failed to restart BMC. Error {ret}: {error_msg}')
-                return False
+            self.BMC_FW_UPDATE_CMD[1] = image_path
+            cmd = self.BMC_FW_UPDATE_CMD
+            subprocess.check_call(
+                cmd, 
+                universal_newlines=True,
+                start_new_session=True
+            )
+            print("Successfully updated BMC firmware, and restarted BMC")
             return True
+        except subprocess.CalledProcessError:
+            print("Failed to update BMC firmware")
+            return False
         except Exception as e:
-            error_trace = traceback.format_exc()
-            print(str(e))
-            print(error_trace)
-            raise
+            logger.log_error(f'Exception occurred during BMC firmware update: {str(e)}')
+            print(f'Exception occurred during BMC firmware update: {str(e)}')
+            return False
 
     def update_firmware(self, image_path):
         return self.install_firmware(image_path)
