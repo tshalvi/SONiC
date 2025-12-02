@@ -308,7 +308,19 @@ class TestSfp:
         sfp = SFP(0)
         api = sfp.get_xcvr_api()
         assert api is None
-        mock_read.return_value = bytearray([0x18])
+
+        # Mock EEPROM reads with proper side_effect to handle different offsets
+        def eeprom_side_effect(offset, length):
+            if (offset, length) == (0, 1):
+                return bytearray([0x18])  # Module ID (CMIS)
+            if (offset, length) == (129, 16):
+                return b'INNOLIGHT       '  # Vendor name (padded to 16 bytes)
+            if (offset, length) == (148, 16):
+                return b'T-DL8CNT-NCI    '  # Vendor part number (padded to 16 bytes)
+            # Return zeros for any other reads
+            return bytearray([0] * length)
+
+        mock_read.side_effect = eeprom_side_effect
         api = sfp.get_xcvr_api()
         assert api is not None
 
@@ -544,9 +556,9 @@ class TestSfp:
         def mock_read_int_side_effect(file_path, *args, **kwargs):
             if 'temperature/input' in file_path:
                 return 448  # 56.0 * 8.0
-            elif 'temperature/threshold_lo' in file_path:
-                return 448  # 56.0 * 8.0
             elif 'temperature/threshold_hi' in file_path:
+                return 448  # 56.0 * 8.0
+            elif 'temperature/threshold_critical_hi' in file_path:
                 return 480  # 60.0 * 8.0
             return None
 
@@ -657,3 +669,16 @@ class TestSfp:
         assert warn == 75.0
         assert crit == 85.0
         assert sfp.retry_read_threshold == 0  # Should be set to 0 on success
+
+    def test_reinit_if_sn_changed(self):
+        sfp = SFP(0)
+        sfp.get_xcvr_api = mock.MagicMock(return_value=None)
+        assert not sfp.reinit_if_sn_changed()
+        
+        sfp.get_xcvr_api.return_value = mock.MagicMock()
+        sfp.get_xcvr_api.return_value.xcvr_eeprom.read = mock.MagicMock(return_value='1234567890')
+        assert sfp.reinit_if_sn_changed()
+        
+        sfp.get_xcvr_api.return_value.xcvr_eeprom.read.return_value = '1234567891'
+        assert sfp.reinit_if_sn_changed()
+
