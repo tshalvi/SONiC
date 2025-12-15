@@ -1814,4 +1814,15 @@ class CpoPort(SFP):
         """
         return
 
+    def _get_page_and_page_offset(self, overall_offset):
+        """Get EEPROM page and page offset according to overall offset.
 
+        Args:
+            overall_offset (int): Overall read offset
+
+        Returns:
+            tuple: (<page_num>, <page_path>, <page_offset>)
+        """
+        # Currently, CPO only supports page 0 and page 1 and page 2.
+        page_number, page, page_offset = super()._get_page_and_page_offset(overall_offset)
+        return (None, None, None) if page_number > 2 else (page_number, page, page_offset)
