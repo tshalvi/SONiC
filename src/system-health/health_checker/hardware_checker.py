@@ -296,6 +296,7 @@ class HardwareChecker(HealthChecker):
 
     def reset(self):
         self._info = {}
+        self.leaking_sensors = []
 
     @classmethod
     def _ignore_check(cls, ignore_set, category, object_name, check_point):
@@ -309,6 +310,8 @@ class HardwareChecker(HealthChecker):
         return False
 
     def publish_events(self, sensors, event_name):
+        if not sensors:
+            return
         params = swsscommon.FieldValueMap()
         events_handle = swsscommon.events_init_publisher(EVENTS_PUBLISHER_SOURCE)
         for sensor in sensors:
@@ -327,7 +330,7 @@ class HardwareChecker(HealthChecker):
         if not config.include_devices or 'liquid_cooling' not in config.include_devices:
             return
 
-        keys = self._db.keys(self._db.STATE_DB, HardwareChecker.LIQUID_COOLING_TABLE_NAME + '*')
+        keys = self._db.keys(self._db.STATE_DB, HardwareChecker.LIQUID_COOLING_TABLE_NAME + '|*')
         if not keys:
             self.set_object_not_ok('Liquid Cooling', 'Liquid Cooling', 'Failed to get liquid cooling information')
             return

@@ -89,8 +89,6 @@ class ServiceChecker(HealthChecker):
 
         self.load_critical_process_cache()
 
-        self.events_handle = swsscommon.events_init_publisher(EVENTS_PUBLISHER_SOURCE)
-
         dlog.log_notice("Initialize module: done")
 
     def get_expected_running_containers(self, feature_table):
@@ -371,7 +369,6 @@ class ServiceChecker(HealthChecker):
         self.reset()
         self.check_by_monit(config)
         self.check_services(config)
-        swsscommon.events_deinit_publisher(self.events_handle)
         dlog.log_notice("Checking services: done")
 
     def _parse_supervisorctl_status(self, process_status):

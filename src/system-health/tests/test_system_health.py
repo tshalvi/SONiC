@@ -473,29 +473,29 @@ def test_hardware_checker():
 
     MockConnector.data.update({
         'LIQUID_COOLING_INFO|liquid_cooling_1': {
-                'leak_status': 'Yes',
-                'leak_sensor_name': 'liquid_cooling_1'
-            },
-            'LIQUID_COOLING_INFO|liquid_cooling_2': {
-                'leak_status': 'No',
-                'leak_sensor_name': 'liquid_cooling_2'
-            },
-            'LIQUID_COOLING_INFO|liquid_cooling_3': {
-                'leak_status': 'Yes',
-                'leak_sensor_name': 'liquid_cooling_3'
-            },
-            'LIQUID_COOLING_INFO|liquid_cooling_4': {
-                'leak_status': 'No',
-                'leak_sensor_name': 'liquid_cooling_4'
-            },
-            'LIQUID_COOLING_INFO|liquid_cooling_5': {
-                'leak_status': 'Yes',
-                'leak_sensor_name': 'liquid_cooling_5'
-            },
-            'LIQUID_COOLING_INFO|liquid_cooling_6': {
-                'leak_status': 'No',
-                'leak_sensor_name': 'liquid_cooling_6'
-            }
+            'leak_status': 'Yes',
+            'leak_sensor_name': 'liquid_cooling_1'
+        },
+        'LIQUID_COOLING_INFO|liquid_cooling_2': {
+            'leak_status': 'No',
+            'leak_sensor_name': 'liquid_cooling_2'
+        },
+        'LIQUID_COOLING_INFO|liquid_cooling_3': {
+            'leak_status': 'Yes',
+            'leak_sensor_name': 'liquid_cooling_3'
+        },
+        'LIQUID_COOLING_INFO|liquid_cooling_4': {
+            'leak_status': 'No',
+            'leak_sensor_name': 'liquid_cooling_4'
+        },
+        'LIQUID_COOLING_INFO|liquid_cooling_5': {
+            'leak_status': 'Yes',
+            'leak_sensor_name': 'liquid_cooling_5'
+        },
+        'LIQUID_COOLING_INFO|liquid_cooling_6': {
+            'leak_status': 'No',
+            'leak_sensor_name': 'liquid_cooling_6'
+        }
     })
 
     checker = HardwareChecker()
