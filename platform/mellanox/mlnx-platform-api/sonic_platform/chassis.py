@@ -123,6 +123,7 @@ class Chassis(ChassisBase):
         self._RJ45_port_inited = False
         self._RJ45_port_list = None
 
+
         # Build the CPO port list from platform.json and hwsku.json
         self._cpo_port_inited = False
         self._cpo_port_list = None
