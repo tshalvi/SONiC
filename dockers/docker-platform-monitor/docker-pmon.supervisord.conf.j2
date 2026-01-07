@@ -199,12 +199,17 @@ dependent_startup_wait_for=rsyslogd:running {% if delay_non_critical_daemon %}de
 
 {% if not skip_thermalctld %}
 [program:thermalctld]
-{% set base_command = "python3 /usr/local/bin/thermalctld" %}
+{% set base_command = (
+    "python3 /usr/local/bin/thermalctld"
+    if API_VERSION == 3 and 'thermalctld' not in python2_daemons
+    else "python2 /usr/local/bin/thermalctld"
+) %}
 {% set options = "" -%}
 
-{% if enable_liquid_cooling %}
-    {%- set options = options + " --enable_liquid_cooling" %}
-{% endif -%}
+{% if thermalctld is defined %}
+    {% if thermalctld.thermal_monitor_initial_interval is defined and thermalctld.thermal_monitor_initial_interval is not none %}
+        {%- set options = options + " --thermal-monitor-initial-interval " + thermalctld.thermal_monitor_initial_interval|string %}
+    {% endif -%}
 
     {% if thermalctld.thermal_monitor_update_interval is defined and thermalctld.thermal_monitor_update_interval is not none %}
         {%- set options = options + " --thermal-monitor-update-interval " + thermalctld.thermal_monitor_update_interval|string %}
@@ -224,7 +229,6 @@ dependent_startup_wait_for=rsyslogd:running {% if delay_non_critical_daemon %}de
 {% endif -%}
 
 {%- set command = base_command ~ options %}
-
 command={{ command }}
 priority=10
 autostart=false
