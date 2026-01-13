@@ -202,7 +202,9 @@ DEVICE_DATA = {
     'x86_64-nvidia_sn5810_ld-r0': {
         'thermal': {
             "capability": {
-                "comex_amb": False
+                "comex_amb": False,
+                "port_amb": False,
+                "fan_amb": False
             }
         },
         'sfp': {
@@ -214,6 +216,8 @@ DEVICE_DATA = {
             "capability": {
                 "cpu_pack": False,
                 "comex_amb": False,
+                "port_amb": False,
+                "fan_amb": False
             }
         }
     },
