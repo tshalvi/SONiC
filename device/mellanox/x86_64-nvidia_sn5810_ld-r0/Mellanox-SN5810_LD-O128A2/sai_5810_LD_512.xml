@@ -6,12 +6,11 @@
         <device-mac-address>00:02:03:04:05:00</device-mac-address>
 
         <!-- ISSU enabled -->
-	<issu-enabled>1</issu-enabled>
-
-	<late-create-all-ports>1</late-create-all-ports>
+        <issu-enabled>1</issu-enabled>
+        <late-create-all-ports>1</late-create-all-ports>
 
         <!-- Number of ports in the following port list -->
-        <number-of-physical-ports>66</number-of-physical-ports>
+        <number-of-physical-ports>64</number-of-physical-ports>
 
         <!-- List of ports in the device -->
         <ports-list>
@@ -21,7 +20,8 @@
                 <module>0</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>9</local-port>
@@ -29,7 +29,8 @@
                 <module>0</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>17</local-port>
@@ -37,7 +38,8 @@
                 <module>0</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>25</local-port>
@@ -45,7 +47,8 @@
                 <module>0</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>33</local-port>
@@ -53,7 +56,8 @@
                 <module>1</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>41</local-port>
@@ -61,7 +65,8 @@
                 <module>1</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>49</local-port>
@@ -69,7 +74,8 @@
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
                 <width>8</width>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>57</local-port>
@@ -77,7 +83,8 @@
                 <module>1</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>65</local-port>
@@ -85,7 +92,8 @@
                 <module>2</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>73</local-port>
@@ -93,7 +101,8 @@
                 <module>2</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>81</local-port>
@@ -101,7 +110,8 @@
                 <module>2</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>89</local-port>
@@ -109,7 +119,8 @@
                 <module>2</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>97</local-port>
@@ -117,7 +128,8 @@
                 <module>3</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>105</local-port>
@@ -125,7 +137,8 @@
                 <module>3</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>113</local-port>
@@ -133,7 +146,8 @@
                 <module>3</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>121</local-port>
@@ -141,7 +155,8 @@
                 <module>3</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>129</local-port>
@@ -149,7 +164,8 @@
                 <module>4</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>137</local-port>
@@ -157,7 +173,8 @@
                 <module>4</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>145</local-port>
@@ -165,7 +182,8 @@
                 <module>4</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>153</local-port>
@@ -173,7 +191,8 @@
                 <module>4</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>161</local-port>
@@ -181,7 +200,8 @@
                 <module>5</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>169</local-port>
@@ -189,7 +209,8 @@
                 <module>5</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>177</local-port>
@@ -197,7 +218,8 @@
                 <module>5</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>185</local-port>
@@ -205,7 +227,8 @@
                 <module>5</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>193</local-port>
@@ -213,7 +236,8 @@
                 <module>6</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>201</local-port>
@@ -221,7 +245,8 @@
                 <module>6</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>209</local-port>
@@ -233,7 +258,8 @@
                 <breakout-modes>7</breakout-modes>
 
                 <!-- (BITMASK) 2 - 1Gb , 16 - 10Gb , 32 - 40Gb , 384 - 50Gb , 1536 - 100Gb , 4096 - 200Gb, 32768 - 400G, 262144 - 800G -->
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>217</local-port>
@@ -241,7 +267,8 @@
                 <module>6</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>225</local-port>
@@ -249,7 +276,8 @@
                 <module>7</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>233</local-port>
@@ -257,7 +285,8 @@
                 <module>7</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>241</local-port>
@@ -265,7 +294,8 @@
                 <module>7</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>249</local-port>
@@ -273,7 +303,8 @@
                 <module>7</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>257</local-port>
@@ -281,7 +312,8 @@
                 <module>8</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>265</local-port>
@@ -289,7 +321,8 @@
                 <module>8</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>273</local-port>
@@ -297,7 +330,8 @@
                 <module>8</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>281</local-port>
@@ -305,7 +339,8 @@
                 <module>8</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>289</local-port>
@@ -313,7 +348,8 @@
                 <module>9</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>297</local-port>
@@ -321,7 +357,8 @@
                 <module>9</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>305</local-port>
@@ -329,7 +366,8 @@
                 <module>9</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>313</local-port>
@@ -337,7 +375,8 @@
                 <module>9</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>321</local-port>
@@ -345,7 +384,8 @@
                 <module>10</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>329</local-port>
@@ -353,7 +393,8 @@
                 <module>10</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>337</local-port>
@@ -361,7 +402,8 @@
                 <module>10</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>345</local-port>
@@ -369,7 +411,8 @@
                 <module>10</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>353</local-port>
@@ -377,7 +420,8 @@
                 <module>11</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>361</local-port>
@@ -385,7 +429,8 @@
                 <module>11</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>369</local-port>
@@ -393,7 +438,8 @@
                 <module>11</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>377</local-port>
@@ -401,7 +447,8 @@
                 <module>11</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>385</local-port>
@@ -409,7 +456,8 @@
                 <module>12</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>393</local-port>
@@ -417,7 +465,8 @@
                 <module>12</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>401</local-port>
@@ -425,7 +474,8 @@
                 <module>12</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>409</local-port>
@@ -433,7 +483,8 @@
                 <module>12</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>417</local-port>
@@ -441,7 +492,8 @@
                 <module>13</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>425</local-port>
@@ -449,7 +501,8 @@
                 <module>13</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>433</local-port>
@@ -457,7 +510,8 @@
                 <module>13</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>441</local-port>
@@ -465,7 +519,8 @@
                 <module>13</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>449</local-port>
@@ -473,7 +528,8 @@
                 <module>14</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>457</local-port>
@@ -481,7 +537,8 @@
                 <module>14</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>465</local-port>
@@ -489,7 +546,8 @@
                 <module>14</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>473</local-port>
@@ -497,7 +555,8 @@
                 <module>14</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>481</local-port>
@@ -505,7 +564,8 @@
                 <module>15</module>
                 <submodule>0</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>489</local-port>
@@ -513,7 +573,8 @@
                 <module>15</module>
                 <submodule>1</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>497</local-port>
@@ -521,7 +582,8 @@
                 <module>15</module>
                 <submodule>2</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
             <port-info>
                 <local-port>505</local-port>
@@ -529,23 +591,8 @@
                 <module>15</module>
                 <submodule>3</submodule>
                 <breakout-modes>7</breakout-modes>
-                <port-speed>32768</port-speed>
-            </port-info>
-            <port-info>
-                <local-port>513</local-port>
-                <width>1</width>
-                <module>16</module>
-                <submodule>0</submodule>
-                <breakout-modes>0</breakout-modes>
-                <port-speed>64</port-speed>
-            </port-info>
-            <port-info>
-                <local-port>515</local-port>
-                <width>1</width>
-                <module>17</module>
-                <submodule>0</submodule>
-                <breakout-modes>0</breakout-modes>
-                <port-speed>64</port-speed>
+                <port-speed>1536</port-speed>
+                <split>8</split>
             </port-info>
         </ports-list>
     </platform_info>
