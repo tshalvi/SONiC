@@ -57,14 +57,6 @@
                         "name": "xSFP module 1 Temp"
                     }
                 ]
-            },
-            {
-                "name": "sfp2",
-                "thermals": [
-                    {
-                        "name": "xSFP module 2 Temp"
-                    }
-                ]
             }
         ]
     },
